@@ -1200,6 +1200,8 @@ void Imu::receiveResponse(const Packet &command, unsigned int to) {
       if (ack == 0) {
         return; //  success, exit
       } else if (ack > 0) {
+        //std::cout << "Comm error\n";
+        //return;
         throw command_error(command, ack);
       } else {
         if (verbose_) {

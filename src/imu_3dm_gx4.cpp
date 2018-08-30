@@ -222,7 +222,8 @@ int main(int argc, char **argv) {
     uint16_t imuBaseRate, filterBaseRate;
     imu.getIMUDataBaseRate(imuBaseRate);
     ROS_INFO("IMU data base rate: %u Hz", imuBaseRate);
-    imu.getFilterDataBaseRate(filterBaseRate);
+    //imu.getFilterDataBaseRate(filterBaseRate);
+    filterBaseRate = 100;
     ROS_INFO("Filter data base rate: %u Hz", filterBaseRate);
 
     //  calculate decimation rates
@@ -240,8 +241,7 @@ int main(int argc, char **argv) {
     
     ROS_INFO("Selecting IMU decimation: %u", imuDecimation);
     std::bitset<4> imuSources = Imu::IMUData::Accelerometer |
-                                Imu::IMUData::Gyroscope |
-                                Imu::IMUData::Barometer;
+                                Imu::IMUData::Gyroscope;
     if (enableMagnetometer)
     {
       ROS_INFO("Enabling magnetometer");
@@ -254,10 +254,10 @@ int main(int argc, char **argv) {
     imu.setIMUDataRate(imuDecimation, imuSources);
 
     ROS_INFO("Selecting filter decimation: %u", filterDecimation);
-    imu.setFilterDataRate(filterDecimation, Imu::FilterData::Quaternion |
+    /*imu.setFilterDataRate(filterDecimation, Imu::FilterData::Quaternion |
                           Imu::FilterData::Bias |
                           Imu::FilterData::AngleUnertainty |
-                          Imu::FilterData::BiasUncertainty);
+                          Imu::FilterData::BiasUncertainty);*/
 
     ROS_INFO("Enabling IMU data stream");
     imu.enableIMUStream(true);
@@ -272,9 +272,13 @@ int main(int argc, char **argv) {
       ROS_INFO("Enabling gyro bias estimation");
       imu.enableBiasEstimation(true);
     } else {
-      ROS_INFO("Disabling filter data stream");
-      imu.enableFilterStream(false);
+      //ROS_INFO("Disabling filter data stream");
+      //imu.enableFilterStream(false);
     }
+
+    //Extra idle command needed for gx3
+    imu.idle();
+
     imu.setIMUDataCallback(publishData);
     imu.setFilterDataCallback(publishFilter);
 
